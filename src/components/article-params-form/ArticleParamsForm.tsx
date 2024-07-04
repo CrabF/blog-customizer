@@ -1,16 +1,17 @@
 import { ArrowButton } from 'components/arrow-button';
 import { Button } from 'components/button';
 import { Text } from '../text';
-import { fontFamilyClasses, fontFamilyOptions, fontColors, backgroundColors, contentWidthArr, fontSizeOptions, OptionType, ArticleStateType, defaultArticleState } from '../../constants/articleProps'
+import { fontFamilyClasses, fontFamilyOptions, fontColors, backgroundColors, contentWidthArr, fontSizeOptions, ArticleStateType, defaultArticleState } from '../../constants/articleProps'
+
+
 
 import styles from './ArticleParamsForm.module.scss';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Select } from '../select';
 import { Separator } from '../separator';
 import { RadioGroup } from '../radio-group';
-
-
+import { useOutsideClickClose } from '../select/hooks/useOutsideClickClose';
 
 export interface ArticleOptions {
   setChangeArticle: (param:ArticleStateType)=>void,
@@ -19,7 +20,8 @@ export interface ArticleOptions {
 
 export const ArticleParamsForm = ({setChangeArticle, articleOptions}: ArticleOptions) => {
 
-  const [isFormOpen, setFromOpened] = useState<boolean>(false);
+  const [isOpen, setFormOpened] = useState<boolean>(false);
+  const rootRef = useRef(null)
  
   const [formState, setFormState] = useState({
     fontFamilyOption: articleOptions.fontFamilyOption,
@@ -28,9 +30,16 @@ export const ArticleParamsForm = ({setChangeArticle, articleOptions}: ArticleOpt
     backgroundColor: articleOptions.backgroundColor,
     contentWidth: articleOptions.contentWidth
   })  
+
+  useOutsideClickClose({
+    isOpen,
+    rootRef,
+    onClose: ()=>{toggleOpenedForm()},
+    onChange: ()=>{toggleOpenedForm}
+  })
   
   function toggleOpenedForm() {
-    setFromOpened(!isFormOpen);
+    setFormOpened(!isOpen);
   }
 
   function updateApp() {
@@ -40,16 +49,22 @@ export const ArticleParamsForm = ({setChangeArticle, articleOptions}: ArticleOpt
   }
 
   function resetForm() {
-    setFormState(defaultArticleState)
+    setFormState(defaultArticleState);
+    setChangeArticle(defaultArticleState)
   }
 
 	return (
 		<>
 			<ArrowButton 
         OnClick = {()=>{toggleOpenedForm()}}
-        isFormOpen = {isFormOpen}/>
-			<aside className={clsx(styles.container, isFormOpen && styles.container_open)}>
-				<form className={styles.form}>
+        isFormOpen = {isOpen}/>
+			<aside 
+        className={clsx(styles.container, isOpen && styles.container_open)}
+        ref={rootRef}>
+				<form 
+          className={styles.form}
+          
+        >
           <Text 
             children={'Задайте параметры'}
             as={'h2'}
