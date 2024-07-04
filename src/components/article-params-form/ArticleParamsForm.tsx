@@ -1,7 +1,7 @@
 import { ArrowButton } from 'components/arrow-button';
 import { Button } from 'components/button';
 import { Text } from '../text';
-import { fontFamilyClasses, fontFamilyOptions, fontColors, backgroundColors, contentWidthArr, fontSizeOptions, OptionType, ArticleStateType } from '../../constants/articleProps'
+import { fontFamilyClasses, fontFamilyOptions, fontColors, backgroundColors, contentWidthArr, fontSizeOptions, OptionType, ArticleStateType, defaultArticleState } from '../../constants/articleProps'
 
 import styles from './ArticleParamsForm.module.scss';
 import { useState } from 'react';
@@ -36,6 +36,11 @@ export const ArticleParamsForm = ({setChangeArticle, articleOptions}: ArticleOpt
   function updateApp() {
     setChangeArticle(formState);
     event?.preventDefault();
+    toggleOpenedForm();
+  }
+
+  function resetForm() {
+    setFormState(defaultArticleState)
   }
 
 	return (
@@ -122,7 +127,8 @@ export const ArticleParamsForm = ({setChangeArticle, articleOptions}: ArticleOpt
             title='ширина контента'
           />
 					<div className={styles.bottomContainer}>
-						<Button title='Сбросить' type='reset' />
+						<Button onClick={()=>{
+              resetForm()}} title='Сбросить' type='reset' />
 						<Button onClick={()=>{
               updateApp()
             }} title='Применить' type='submit' />
